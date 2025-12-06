@@ -1,23 +1,43 @@
 import { useAuthActions } from "@convex-dev/auth/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useToast } from "../context/ToastContext";
+import { type AuthFormData, authSchema } from "../lib/validations/auth";
 
 export default function Auth() {
 	const { signIn } = useAuthActions();
 	const router = useRouter();
+	const toast = useToast();
 	const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
 
-	const handleSubmit = async () => {
+	const { control, handleSubmit, clearErrors } = useForm<AuthFormData>({
+		resolver: zodResolver(authSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+	});
+
+	const toggleFlow = () => {
+		const newFlow = flow === "signIn" ? "signUp" : "signIn";
+		setFlow(newFlow);
+		clearErrors();
+	};
+
+	const onSubmit = async (data: AuthFormData) => {
 		try {
-			setError("");
-			await signIn("password", { email, password, flow });
+			await signIn("password", {
+				email: data.email,
+				password: data.password,
+				flow: flow,
+			});
+			toast.success("Successfully logged in!");
 			router.replace("/");
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Something went wrong");
+			toast.error(err instanceof Error ? err.message : "Something went wrong");
 		}
 	};
 
@@ -28,29 +48,63 @@ export default function Auth() {
 			</Text>
 
 			<View className="w-full max-w-sm space-y-4">
-				{error ? (
-					<Text className="mb-4 text-center text-red-500">{error}</Text>
-				) : null}
+				<View>
+					<Controller
+						control={control}
+						name="email"
+						render={({
+							field: { onChange, onBlur, value },
+							fieldState: { error },
+						}) => (
+							<>
+								<TextInput
+									className="w-full rounded-lg border border-gray-300 p-4 text-lg"
+									placeholder="Email"
+									onBlur={onBlur}
+									onChangeText={onChange}
+									value={value}
+									autoCapitalize="none"
+									keyboardType="email-address"
+								/>
+								{error && (
+									<Text className="mt-1 text-sm text-red-500">
+										{error.message}
+									</Text>
+								)}
+							</>
+						)}
+					/>
+				</View>
 
-				<TextInput
-					className="w-full rounded-lg border border-gray-300 p-4 text-lg"
-					placeholder="Email"
-					value={email}
-					onChangeText={setEmail}
-					autoCapitalize="none"
-					keyboardType="email-address"
-				/>
-
-				<TextInput
-					className="w-full rounded-lg border border-gray-300 p-4 text-lg"
-					placeholder="Password"
-					value={password}
-					onChangeText={setPassword}
-					secureTextEntry
-				/>
+				<View>
+					<Controller
+						control={control}
+						name="password"
+						render={({
+							field: { onChange, onBlur, value },
+							fieldState: { error },
+						}) => (
+							<>
+								<TextInput
+									className="w-full rounded-lg border border-gray-300 p-4 text-lg"
+									placeholder="Password"
+									onBlur={onBlur}
+									onChangeText={onChange}
+									value={value}
+									secureTextEntry
+								/>
+								{error && (
+									<Text className="mt-1 text-sm text-red-500">
+										{error.message}
+									</Text>
+								)}
+							</>
+						)}
+					/>
+				</View>
 
 				<TouchableOpacity
-					onPress={handleSubmit}
+					onPress={handleSubmit(onSubmit)}
 					className="w-full rounded-lg bg-blue-600 p-4"
 				>
 					<Text className="text-center text-lg font-bold text-white">
@@ -58,10 +112,7 @@ export default function Auth() {
 					</Text>
 				</TouchableOpacity>
 
-				<TouchableOpacity
-					onPress={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
-					className="mt-4"
-				>
+				<TouchableOpacity onPress={toggleFlow} className="mt-4">
 					<Text className="text-center text-blue-600">
 						{flow === "signIn"
 							? "Don't have an account? Sign Up"
