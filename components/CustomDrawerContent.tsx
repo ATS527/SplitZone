@@ -53,14 +53,16 @@ export default function CustomDrawerContent(
 						<User size={20} className="text-primary" />
 					</View>
 					<View>
-						<Text className="font-semibold text-foreground">Account</Text>
+						<Text className="font-semibold text-foreground">
+							{user?.name ?? "Account"}
+						</Text>
 						<Text className="text-sm text-muted-foreground">
 							{user?.email ?? "Loading..."}
 						</Text>
 					</View>
 					<TouchableOpacity
 						onPress={() => signOut()}
-						className="flex-row items-center ml-auto rounded-lg active:bg-red-50 dark:active:bg-red-900/10 ml-auto"
+						className="ml-auto flex-row items-center rounded-lg active:bg-red-50 dark:active:bg-red-900/10"
 					>
 						<LogOut size={20} color="#EF4444" />
 						<Text className="ml-3 font-medium text-red-500">Sign Out</Text>

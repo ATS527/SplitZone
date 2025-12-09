@@ -4,8 +4,15 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import z from "zod";
 import { useToast } from "../context/ToastContext";
-import { type AuthFormData, authSchema } from "../lib/validations/auth";
+
+export const authSchema = z.object({
+	email: z.email("Please enter a valid email address"),
+	password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+export type AuthFormData = z.infer<typeof authSchema>;
 
 export default function Auth() {
 	const { signIn } = useAuthActions();

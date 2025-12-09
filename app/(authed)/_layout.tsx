@@ -20,6 +20,13 @@ export default function DrawerLayout() {
 						title: "SplitZone",
 					}}
 				/>
+				<Drawer.Screen
+					name="settings"
+					options={{
+						drawerLabel: "Settings",
+						title: "Settings",
+					}}
+				/>
 			</Drawer>
 		</GestureHandlerRootView>
 	);
