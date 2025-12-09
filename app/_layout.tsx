@@ -1,11 +1,14 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ThemeProvider } from "@react-navigation/native";
 import { ConvexReactClient, useConvexAuth } from "convex/react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import { useColorScheme } from "nativewind";
 import { useEffect } from "react";
 import { ActivityIndicator, Platform, View } from "react-native";
 import { ToastProvider } from "../context/ToastContext";
 import "../global.css";
+import { NAV_THEME } from "../lib/nav-theme";
 
 // biome-ignore lint/style/noNonNullAssertion: crashing is fine if env is not present
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
@@ -19,6 +22,9 @@ const secureStorage = {
 };
 
 export default function RootLayout() {
+	const { colorScheme } = useColorScheme();
+	const isDarkColorScheme = colorScheme === "dark";
+
 	return (
 		<ConvexAuthProvider
 			client={convex}
@@ -28,9 +34,13 @@ export default function RootLayout() {
 					: undefined
 			}
 		>
-			<ToastProvider>
-				<RootLayoutNav />
-			</ToastProvider>
+			<ThemeProvider
+				value={isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light}
+			>
+				<ToastProvider>
+					<RootLayoutNav />
+				</ToastProvider>
+			</ThemeProvider>
 		</ConvexAuthProvider>
 	);
 }
@@ -48,21 +58,21 @@ function RootLayoutNav() {
 		if (!isAuthenticated && !inAuthScreen) {
 			router.replace("/auth");
 		} else if (isAuthenticated && inAuthScreen) {
-			router.replace("/");
+			router.replace("/(authed)");
 		}
 	}, [isAuthenticated, isLoading, segments, router]);
 
 	if (isLoading) {
 		return (
-			<View className="flex-1 items-center justify-center bg-white">
-				<ActivityIndicator size="large" color="#2563EB" />
+			<View className="flex-1 items-center justify-center bg-background">
+				<ActivityIndicator size="large" className="text-primary" />
 			</View>
 		);
 	}
 
 	return (
 		<Stack>
-			<Stack.Screen name="index" />
+			<Stack.Screen name="(authed)" options={{ headerShown: false }} />
 			<Stack.Screen name="auth" options={{ headerShown: false }} />
 		</Stack>
 	);

@@ -42,8 +42,8 @@ export default function Auth() {
 	};
 
 	return (
-		<View className="flex-1 items-center justify-center bg-white p-8">
-			<Text className="mb-8 text-3xl font-bold text-gray-900">
+		<View className="flex-1 items-center justify-center bg-background p-8">
+			<Text className="mb-8 text-3xl font-bold text-foreground">
 				{flow === "signIn" ? "Welcome Back" : "Create Account"}
 			</Text>
 
@@ -58,8 +58,9 @@ export default function Auth() {
 						}) => (
 							<>
 								<TextInput
-									className="w-full rounded-lg border border-gray-300 p-4 text-lg"
+									className="w-full rounded-lg border border-input p-4 text-lg text-foreground placeholder:text-muted-foreground"
 									placeholder="Email"
+									placeholderTextColor="hsl(240 3.8% 46.1%)"
 									onBlur={onBlur}
 									onChangeText={onChange}
 									value={value}
@@ -67,7 +68,7 @@ export default function Auth() {
 									keyboardType="email-address"
 								/>
 								{error && (
-									<Text className="mt-1 text-sm text-red-500">
+									<Text className="mt-1 text-sm text-destructive">
 										{error.message}
 									</Text>
 								)}
@@ -86,15 +87,16 @@ export default function Auth() {
 						}) => (
 							<>
 								<TextInput
-									className="w-full rounded-lg border border-gray-300 p-4 text-lg"
+									className="w-full rounded-lg border border-input p-4 text-lg text-foreground placeholder:text-muted-foreground"
 									placeholder="Password"
+									placeholderTextColor="hsl(240 3.8% 46.1%)"
 									onBlur={onBlur}
 									onChangeText={onChange}
 									value={value}
 									secureTextEntry
 								/>
 								{error && (
-									<Text className="mt-1 text-sm text-red-500">
+									<Text className="mt-1 text-sm text-destructive">
 										{error.message}
 									</Text>
 								)}
@@ -105,15 +107,15 @@ export default function Auth() {
 
 				<TouchableOpacity
 					onPress={handleSubmit(onSubmit)}
-					className="w-full rounded-lg bg-blue-600 p-4"
+					className="w-full rounded-lg bg-primary p-4"
 				>
-					<Text className="text-center text-lg font-bold text-white">
+					<Text className="text-center text-lg font-bold text-primary-foreground">
 						{flow === "signIn" ? "Sign In" : "Sign Up"}
 					</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity onPress={toggleFlow} className="mt-4">
-					<Text className="text-center text-blue-600">
+					<Text className="text-center text-primary">
 						{flow === "signIn"
 							? "Don't have an account? Sign Up"
 							: "Already have an account? Sign In"}
