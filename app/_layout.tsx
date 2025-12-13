@@ -58,7 +58,7 @@ function RootLayoutNav() {
 		if (!isAuthenticated && !inAuthScreen) {
 			router.replace("/auth");
 		} else if (isAuthenticated && inAuthScreen) {
-			router.replace("/(authed)");
+			router.replace("/(authed)/(home)");
 		}
 	}, [isAuthenticated, isLoading, segments, router]);
 

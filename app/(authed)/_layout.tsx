@@ -14,14 +14,14 @@ export default function DrawerLayout() {
 				}}
 			>
 				<Drawer.Screen
-					name="index"
+					name="(home)/index"
 					options={{
 						drawerLabel: "Home",
 						title: "SplitZone",
 					}}
 				/>
 				<Drawer.Screen
-					name="settings"
+					name="(settings)/settings"
 					options={{
 						drawerLabel: "Settings",
 						title: "Settings",
