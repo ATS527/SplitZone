@@ -4,16 +4,20 @@ import type { Doc } from "../../../../convex/_generated/dataModel";
 
 interface GroupListProps {
 	groups: Doc<"groups">[];
+	onGroupPress: (groupId: Doc<"groups">["_id"]) => void;
 }
 
-export function GroupList({ groups }: GroupListProps) {
+export default function GroupList({ groups, onGroupPress }: GroupListProps) {
 	return (
 		<FlatList
 			data={groups}
 			keyExtractor={(item) => item._id}
 			contentContainerStyle={{ paddingBottom: 100 }}
 			renderItem={({ item }) => (
-				<TouchableOpacity className="mb-4 rounded-xl border border-border bg-card p-4 shadow-sm active:bg-accent">
+				<TouchableOpacity
+					className="mb-4 rounded-xl border border-border bg-card p-4 shadow-sm active:bg-accent"
+					onPress={() => onGroupPress(item._id)}
+				>
 					<View className="flex-row items-center justify-between">
 						<View>
 							<Text className="text-lg font-bold text-foreground">

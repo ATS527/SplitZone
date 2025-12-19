@@ -17,7 +17,7 @@ const settingsSchema = z.object({
 type SettingsFormData = z.infer<typeof settingsSchema>;
 
 export default function Settings() {
-	const user = useQuery(api.users.viewer);
+	const user = useQuery(api.users.getCurrentlyLoggedInUser);
 	const updateUser = useMutation(api.users.update);
 	const toast = useToast();
 	const [isModalVisible, setIsModalVisible] = useState(false);

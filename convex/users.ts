@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const viewer = query({
+export const getCurrentlyLoggedInUser = query({
 	args: {},
 	handler: async (ctx) => {
 		const userId = await getAuthUserId(ctx);
@@ -18,6 +18,29 @@ export const viewer = query({
 			email: user.email,
 			name: user.name,
 		};
+	},
+});
+
+export const searchUserByEmail = query({
+	args: { search: v.string() },
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) {
+			return [];
+		}
+
+		if (!args.search) return [];
+
+		const users = await ctx.db
+			.query("users")
+			.withIndex("email", (q) => q.eq("email", args.search))
+			.collect();
+
+		return users.map((u) => ({
+			_id: u._id,
+			email: u.email,
+			name: u.name,
+		}));
 	},
 });
 

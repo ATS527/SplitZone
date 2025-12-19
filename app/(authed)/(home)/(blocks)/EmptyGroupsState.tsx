@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-export function EmptyGroupsState() {
+export default function EmptyGroupsState() {
 	return (
 		<View className="flex-1 items-center justify-center">
 			<Text className="mb-4 text-xl font-bold text-foreground">

@@ -19,8 +19,11 @@ interface CreateGroupModalProps {
 	onClose: () => void;
 }
 
-export function CreateGroupModal({ visible, onClose }: CreateGroupModalProps) {
-	const createGroup = useMutation(api.groups.create);
+export default function CreateGroupModal({
+	visible,
+	onClose,
+}: CreateGroupModalProps) {
+	const createGroup = useMutation(api.groups.createGroup);
 	const toast = useToast();
 
 	const {

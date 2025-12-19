@@ -16,7 +16,7 @@ export default function CustomDrawerContent(
 ) {
 	const { signOut } = useAuthActions();
 	const { bottom } = useSafeAreaInsets();
-	const user = useQuery(api.users.viewer);
+	const user = useQuery(api.users.getCurrentlyLoggedInUser);
 	const { colorScheme, toggleColorScheme } = useColorScheme();
 
 	return (
