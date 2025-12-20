@@ -1,13 +1,18 @@
 import { ChevronRight } from "lucide-react-native";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import type { Doc } from "../../../../convex/_generated/dataModel";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface GroupListProps {
 	groups: Doc<"groups">[];
 	onGroupPress: (groupId: Doc<"groups">["_id"]) => void;
+	onGroupLongPress: (groupId: Doc<"groups">["_id"]) => void;
 }
 
-export default function GroupList({ groups, onGroupPress }: GroupListProps) {
+export default function GroupList({
+	groups,
+	onGroupPress,
+	onGroupLongPress,
+}: GroupListProps) {
 	return (
 		<FlatList
 			data={groups}
@@ -17,6 +22,8 @@ export default function GroupList({ groups, onGroupPress }: GroupListProps) {
 				<TouchableOpacity
 					className="mb-4 rounded-xl border border-border bg-card p-4 shadow-sm active:bg-accent"
 					onPress={() => onGroupPress(item._id)}
+					onLongPress={() => onGroupLongPress(item._id)}
+					delayLongPress={500}
 				>
 					<View className="flex-row items-center justify-between">
 						<View>

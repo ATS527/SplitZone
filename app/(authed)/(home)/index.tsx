@@ -1,13 +1,14 @@
 import { useQuery } from "convex/react";
+import { useRouter } from "expo-router";
 import { Plus } from "lucide-react-native";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import CreateGroupModal from "../../../components/home/CreateGroupModal";
+import EmptyGroupsState from "../../../components/home/EmptyGroupsState";
+import GroupDetailsModal from "../../../components/home/GroupDetailsModal";
+import GroupList from "../../../components/home/GroupList";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import CreateGroupModal from "./(blocks)/CreateGroupModal";
-import EmptyGroupsState from "./(blocks)/EmptyGroupsState";
-import GroupDetailsModal from "./(blocks)/GroupDetailsModal";
-import GroupList from "./(blocks)/GroupList";
 
 export default function Index() {
 	const groups = useQuery(api.groups.listAllGroupsOfLoggedInUser);
@@ -15,6 +16,9 @@ export default function Index() {
 	const [selectedGroupId, setSelectedGroupId] = useState<Id<"groups"> | null>(
 		null,
 	);
+
+	// biome-ignore lint/suspicious/noShadowRestrictedNames: router is a common name
+	const router = useRouter();
 
 	return (
 		<View className="flex-1 bg-background p-4">
@@ -26,7 +30,11 @@ export default function Index() {
 			) : groups.length === 0 ? (
 				<EmptyGroupsState />
 			) : (
-				<GroupList groups={groups} onGroupPress={setSelectedGroupId} />
+				<GroupList
+					groups={groups}
+					onGroupPress={(groupId) => router.push(`/(authed)/(home)/${groupId}`)}
+					onGroupLongPress={setSelectedGroupId}
+				/>
 			)}
 
 			{/* Floating Action Button */}

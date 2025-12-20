@@ -10,10 +10,10 @@ import {
 	View,
 } from "react-native";
 import { z } from "zod";
-import { FormModal } from "../../../../components/ui/FormModal";
-import { useToast } from "../../../../context/ToastContext";
-import { api } from "../../../../convex/_generated/api";
-import type { Id } from "../../../../convex/_generated/dataModel";
+import { useToast } from "../../context/ToastContext";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
+import { FormModal } from "../ui/FormModal";
 
 interface GroupDetailsModalProps {
 	visible: boolean;

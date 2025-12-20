@@ -3,9 +3,9 @@ import { useMutation } from "convex/react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput, View } from "react-native";
 import { z } from "zod";
-import { FormModal } from "../../../../components/ui/FormModal";
-import { useToast } from "../../../../context/ToastContext";
-import { api } from "../../../../convex/_generated/api";
+import { useToast } from "../../context/ToastContext";
+import { api } from "../../convex/_generated/api";
+import { FormModal } from "../ui/FormModal";
 
 const createGroupSchema = z.object({
 	name: z.string().min(3, "Group name must be at least 3 characters"),

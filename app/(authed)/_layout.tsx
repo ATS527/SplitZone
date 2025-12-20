@@ -14,10 +14,11 @@ export default function DrawerLayout() {
 				}}
 			>
 				<Drawer.Screen
-					name="(home)/index"
+					name="(home)"
 					options={{
 						drawerLabel: "Home",
 						title: "SplitZone",
+						headerShown: false,
 					}}
 				/>
 				<Drawer.Screen

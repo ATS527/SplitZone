@@ -44,7 +44,7 @@ export const searchUserByEmail = query({
 	},
 });
 
-export const update = mutation({
+export const updateUserName = mutation({
 	args: {
 		name: v.string(),
 	},
