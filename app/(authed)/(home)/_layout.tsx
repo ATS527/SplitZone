@@ -21,7 +21,7 @@ export default function HomeLayout() {
 				}}
 			/>
 			<Stack.Screen
-				name="[groupId]"
+				name="group/[groupId]"
 				options={{
 					title: "Group Details",
 					headerBackTitle: "Back",

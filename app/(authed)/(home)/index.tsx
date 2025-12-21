@@ -17,7 +17,6 @@ export default function Index() {
 		null,
 	);
 
-	// biome-ignore lint/suspicious/noShadowRestrictedNames: router is a common name
 	const router = useRouter();
 
 	return (
@@ -32,7 +31,9 @@ export default function Index() {
 			) : (
 				<GroupList
 					groups={groups}
-					onGroupPress={(groupId) => router.push(`/(authed)/(home)/${groupId}`)}
+					onGroupPress={(groupId) =>
+						router.push(`/(authed)/(home)/group/${groupId}`)
+					}
 					onGroupLongPress={setSelectedGroupId}
 				/>
 			)}
