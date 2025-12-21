@@ -121,6 +121,21 @@ export default function Auth() {
 					</Text>
 				</TouchableOpacity>
 
+				<View className="flex-row items-center my-4">
+					<View className="flex-1 h-[1px] bg-border" />
+					<Text className="mx-4 text-muted-foreground">or</Text>
+					<View className="flex-1 h-[1px] bg-border" />
+				</View>
+
+				<TouchableOpacity
+					onPress={() => void signIn("google", { redirectTo: "/" })}
+					className="w-full flex-row items-center justify-center rounded-lg border border-input bg-background p-4"
+				>
+					<Text className="text-center text-lg font-bold text-foreground">
+						Sign in with Google
+					</Text>
+				</TouchableOpacity>
+
 				<TouchableOpacity onPress={toggleFlow} className="mt-4">
 					<Text className="text-center text-primary">
 						{flow === "signIn"
