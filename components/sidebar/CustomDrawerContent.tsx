@@ -9,7 +9,7 @@ import { LogOut, Moon, Sun, User } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { Switch, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { api } from "../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 
 export default function CustomDrawerContent(
 	props: DrawerContentComponentProps,

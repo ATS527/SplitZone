@@ -18,7 +18,7 @@ type SettingsFormData = z.infer<typeof settingsSchema>;
 
 export default function Settings() {
 	const user = useQuery(api.users.getCurrentlyLoggedInUser);
-	const updateUser = useMutation(api.users.update);
+	const updateUserName = useMutation(api.users.updateUserName);
 	const toast = useToast();
 	const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -42,7 +42,7 @@ export default function Settings() {
 
 	const onSubmit = async (data: SettingsFormData) => {
 		try {
-			await updateUser({ name: data.name });
+			await updateUserName({ name: data.name });
 			toast.success("Name updated successfully!");
 			setIsModalVisible(false);
 		} catch (err) {
