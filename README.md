@@ -1,50 +1,88 @@
-# Welcome to your Expo app 👋
+# SplitZone
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+SplitZone is a modern React Native application designed for splitting group expenses. Built with Expo and powered by Convex for the backend, it offers a seamless experience for managing shared costs.
 
-## Get started
+## 🚀 Tech Stack
 
-1. Install dependencies
+- **Framework:** [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/) (SDK 54)
+- **Routing:** [Expo Router](https://docs.expo.dev/router/introduction/) (v6) - File-based routing
+- **Backend & Database:** [Convex](https://www.convex.dev/) - Real-time backend as a service
+- **Styling:** [NativeWind](https://www.nativewind.dev/) (Tailwind CSS)
+- **Authentication:** Convex Auth
+- **Icons:** Lucide React Native
+- **Linting & Formatting:** Biome, ESLint
 
+## 🛠️ Prerequisites
+
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Expo Go](https://expo.dev/client) app on your mobile device (iOS/Android) or an emulator.
+
+## 📦 Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd SplitZone
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Setup Convex Backend:**
+   Initialize and sync your Convex backend project:
    ```bash
+   npx convex dev
+   ```
+   Follow the prompts to log in and configure your project.
+
+## 🏃‍♂️ Running the App
+
+1. **Start the development server:**
+   ```bash
+   npm start
+   # or
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+2. **Open the app:**
+   - **Mobile:** Scan the QR code with the Expo Go app (Android) or Camera app (iOS).
+   - **Emulator:** Press `a` for Android or `i` for iOS simulator (requires setup).
+   - **Web:** Press `w` to run in the browser.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📂 Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+SplitZone/
+├── app/                  # Expo Router file-based routes
+│   ├── (authed)/         # Protected routes (Home, Groups, Settings)
+│   ├── (public)/         # Public routes (Login, etc.)
+│   └── _layout.tsx       # Root layout
+├── components/           # Reusable UI components
+├── convex/               # Backend functions (queries, mutations) and schema
+├── assets/               # Images and fonts
+├── global.css            # Global Tailwind CSS styles
+└── package.json          # Dependencies and scripts
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## ✨ Features
 
-## Learn more
+- **User Authentication:** Secure login and session management via Convex Auth.
+- **Group Management:** Create new groups or join existing ones using invite codes.
+- **Real-time Updates:** Instant improvements and data syncing powered by Convex.
+- **Modern UI:** Clean and responsive interface built with NativeWind.
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🤝 Contributing
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Join the community
+## 📄 License
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is licensed under the MIT License.
