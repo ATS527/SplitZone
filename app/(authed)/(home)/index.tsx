@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Plus } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import CreateGroupModal from "../../../components/home/CreateGroupModal";
 import EmptyGroupsState from "../../../components/home/EmptyGroupsState";
@@ -18,6 +18,17 @@ export default function Index() {
 	);
 
 	const router = useRouter();
+	const { joinGroupId } = useLocalSearchParams();
+
+	// Handle redirect from join screen to preserve back stack
+	useEffect(() => {
+		if (joinGroupId) {
+			const groupId = Array.isArray(joinGroupId) ? joinGroupId[0] : joinGroupId;
+			// Clear the param so it doesn't trigger again when navigating back
+			router.setParams({ joinGroupId: undefined });
+			router.push(`/group/${groupId}`);
+		}
+	}, [joinGroupId, router]);
 
 	return (
 		<View className="flex-1 bg-background p-4">
@@ -31,9 +42,7 @@ export default function Index() {
 			) : (
 				<GroupList
 					groups={groups}
-					onGroupPress={(groupId) =>
-						router.push(`/(authed)/(home)/group/${groupId}`)
-					}
+					onGroupPress={(groupId) => router.push(`/group/${groupId}`)}
 					onGroupLongPress={setSelectedGroupId}
 				/>
 			)}

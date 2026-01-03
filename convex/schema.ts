@@ -13,7 +13,8 @@ const schema = defineSchema({
 	groups: defineTable({
 		name: v.string(),
 		description: v.optional(v.string()),
-	}),
+		inviteCode: v.optional(v.string()),
+	}).index("by_invite_code", ["inviteCode"]),
 	group_members: defineTable({
 		groupId: v.id("groups"),
 		userId: v.id("users"),

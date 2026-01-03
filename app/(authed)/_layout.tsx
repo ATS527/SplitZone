@@ -22,10 +22,17 @@ export default function DrawerLayout() {
 					}}
 				/>
 				<Drawer.Screen
-					name="(settings)/settings"
+					name="settings/index"
 					options={{
 						drawerLabel: "Settings",
 						title: "Settings",
+					}}
+				/>
+				<Drawer.Screen
+					name="join/[code]"
+					options={{
+						drawerItemStyle: { display: "none" },
+						title: "Join Group",
 					}}
 				/>
 			</Drawer>

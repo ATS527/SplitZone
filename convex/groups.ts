@@ -128,3 +128,101 @@ export const addMemberToGroup = mutation({
 		});
 	},
 });
+
+export const getGroupInviteCode = query({
+	args: { groupId: v.id("groups") },
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) {
+			return null;
+		}
+
+		// Check if user is member of group
+		const membership = await ctx.db
+			.query("group_members")
+			.withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+			.filter((q) => q.eq(q.field("userId"), userId))
+			.first();
+
+		if (!membership) {
+			return null;
+		}
+
+		const group = await ctx.db.get(args.groupId);
+		return group?.inviteCode;
+	},
+});
+
+export const generateInviteCode = mutation({
+	args: { groupId: v.id("groups") },
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) {
+			throw new Error("Not authenticated");
+		}
+
+		// Check if user is member of group
+		const membership = await ctx.db
+			.query("group_members")
+			.withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+			.filter((q) => q.eq(q.field("userId"), userId))
+			.first();
+
+		if (!membership) {
+			throw new Error("Not authorized");
+		}
+
+		const group = await ctx.db.get(args.groupId);
+		if (!group) throw new Error("Group not found");
+
+		if (group.inviteCode) return group.inviteCode;
+
+		const inviteCode = Math.random()
+			.toString(36)
+			.substring(2, 10)
+			.toUpperCase();
+
+		await ctx.db.patch(args.groupId, {
+			inviteCode,
+		});
+
+		return inviteCode;
+	},
+});
+
+export const joinGroupViaCode = mutation({
+	args: { inviteCode: v.string() },
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) {
+			throw new Error("Not authenticated");
+		}
+
+		const group = await ctx.db
+			.query("groups")
+			.withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+			.first();
+
+		if (!group) {
+			throw new Error("Invalid invite code");
+		}
+
+		const existingMembership = await ctx.db
+			.query("group_members")
+			.withIndex("by_group", (q) => q.eq("groupId", group._id))
+			.filter((q) => q.eq(q.field("userId"), userId))
+			.first();
+
+		if (existingMembership) {
+			return group._id; // Already a member, just return groupId
+		}
+
+		await ctx.db.insert("group_members", {
+			groupId: group._id,
+			userId,
+			role: "member",
+		});
+
+		return group._id;
+	},
+});

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
+import { setStringAsync } from "expo-clipboard";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -42,6 +43,11 @@ export default function GroupDetailsModal({
 		search: searchQuery,
 	});
 	const addMember = useMutation(api.groups.addMemberToGroup);
+	const inviteCode = useQuery(
+		api.groups.getGroupInviteCode,
+		groupId ? { groupId } : "skip",
+	);
+	const generateInviteCode = useMutation(api.groups.generateInviteCode);
 
 	const {
 		control,
@@ -76,6 +82,23 @@ export default function GroupDetailsModal({
 		} catch (err) {
 			toast.error(err instanceof Error ? err.message : "Failed to invite user");
 		}
+	};
+
+	const onGenerateLink = async () => {
+		if (!groupId) return;
+		try {
+			await generateInviteCode({ groupId });
+			toast.success("Invite link generated!");
+		} catch (err) {
+			toast.error("Failed to generate link");
+		}
+	};
+
+	const onCopyLink = async () => {
+		if (!inviteCode) return;
+		const link = `http://localhost:8081/join/${inviteCode}`;
+		await setStringAsync(link);
+		toast.success("Link copied to clipboard!");
 	};
 
 	if (!group) return null;
@@ -154,6 +177,40 @@ export default function GroupDetailsModal({
 						{errors.email.message}
 					</Text>
 				)}
+			</View>
+
+			<View className="mt-6">
+				<Text className="mb-2 font-medium text-foreground">
+					Invite via Link
+				</Text>
+				<View className="flex-row gap-2">
+					<View className="flex-1 justify-center rounded-lg border border-input bg-background p-3">
+						<Text className="text-foreground" numberOfLines={1}>
+							{inviteCode
+								? `http://localhost:8081/join/${inviteCode}`
+								: "No invite link generated yet"}
+						</Text>
+					</View>
+					{inviteCode ? (
+						<TouchableOpacity
+							onPress={onCopyLink}
+							className="items-center justify-center rounded-lg bg-secondary px-4"
+						>
+							<Text className="font-medium text-secondary-foreground">
+								Copy
+							</Text>
+						</TouchableOpacity>
+					) : (
+						<TouchableOpacity
+							onPress={onGenerateLink}
+							className="items-center justify-center rounded-lg bg-primary px-4"
+						>
+							<Text className="font-medium text-primary-foreground">
+								Generate
+							</Text>
+						</TouchableOpacity>
+					)}
+				</View>
 			</View>
 		</FormModal>
 	);
