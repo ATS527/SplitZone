@@ -1,5 +1,6 @@
 import { useQuery } from "convex/react";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Plus } from "lucide-react-native";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import GroupDetailsModal from "../../../../components/home/GroupDetailsModal";
@@ -8,6 +9,7 @@ import type { Id } from "../../../../convex/_generated/dataModel";
 
 export default function GroupScreen() {
 	const { groupId } = useLocalSearchParams();
+	const router = useRouter();
 	const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
 	const validGroupId = groupId as Id<"groups">;
@@ -34,6 +36,13 @@ export default function GroupScreen() {
 			<View className="flex-1 items-center justify-center">
 				<Text className="text-muted-foreground">Splits will appear here</Text>
 			</View>
+
+			<TouchableOpacity
+				onPress={() => router.push(`/group/${groupId}/add-expense`)}
+				className="absolute bottom-8 right-8 h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg"
+			>
+				<Plus size={24} color="white" />
+			</TouchableOpacity>
 
 			<GroupDetailsModal
 				visible={detailsModalVisible}
