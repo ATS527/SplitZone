@@ -1,7 +1,9 @@
+import { useEffect, useMemo, useState } from "react";
 import {
 	Modal,
 	ScrollView,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	View,
@@ -29,6 +31,25 @@ export function PayerSelectionModal({
 	paidBy,
 	onSelectPayer,
 }: PayerSelectionModalProps) {
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const filteredMembers = useMemo(() => {
+		if (!searchQuery) return members;
+		const query = searchQuery.toLowerCase();
+		return members.filter((m) => {
+			const name = m.user?.name?.toLowerCase() ?? "";
+			const email = m.user?.email?.toLowerCase() ?? "";
+			return name.includes(query) || email.includes(query);
+		});
+	}, [members, searchQuery]);
+
+	// Reset search when modal closes
+	useEffect(() => {
+		if (!visible) {
+			setSearchQuery("");
+		}
+	}, [visible]);
+
 	return (
 		<Modal
 			visible={visible}
@@ -48,8 +69,20 @@ export function PayerSelectionModal({
 									<Text className="text-primary">Close</Text>
 								</TouchableOpacity>
 							</View>
+
+							{/* Search Input */}
+							<View className="mb-4 flex-row items-center rounded-xl bg-secondary/30 px-3 py-3">
+								<TextInput
+									className="flex-1 text-base text-foreground"
+									placeholder="Search payer..."
+									value={searchQuery}
+									onChangeText={setSearchQuery}
+									autoCorrect={false}
+								/>
+							</View>
+
 							<ScrollView className="max-h-96">
-								{members.map((member) => (
+								{filteredMembers.map((member) => (
 									<TouchableOpacity
 										key={member.userId}
 										onPress={() => {
@@ -78,6 +111,11 @@ export function PayerSelectionModal({
 										</Text>
 									</TouchableOpacity>
 								))}
+								{filteredMembers.length === 0 && (
+									<Text className="py-4 text-center text-muted-foreground">
+										No members found
+									</Text>
+								)}
 							</ScrollView>
 						</View>
 					</TouchableWithoutFeedback>

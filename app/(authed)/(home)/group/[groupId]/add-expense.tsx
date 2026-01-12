@@ -1,7 +1,6 @@
 import { useQuery } from "convex/react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -42,6 +41,7 @@ export default function AddExpenseScreen() {
 		new Set(),
 	);
 	const [memberValues, setMemberValues] = useState<Record<string, string>>({});
+	const isInitialized = useRef(false);
 
 	// Initialize defaults
 	useEffect(() => {
@@ -52,7 +52,7 @@ export default function AddExpenseScreen() {
 
 	// Initialize selected members when group loads
 	useEffect(() => {
-		if (group?.members && selectedMembers.size === 0) {
+		if (group?.members && !isInitialized.current) {
 			const allMemberIds = new Set(group.members.map((m) => m.userId));
 			setSelectedMembers(allMemberIds);
 
@@ -62,8 +62,9 @@ export default function AddExpenseScreen() {
 				initialValues[m.userId] = "1";
 			}
 			setMemberValues(initialValues);
+			isInitialized.current = true;
 		}
-	}, [group?.members, selectedMembers.size]);
+	}, [group?.members]);
 
 	const totalAmount = parseFloat(amount) || 0;
 
@@ -86,33 +87,47 @@ export default function AddExpenseScreen() {
 		} else if (splitType === "SHARES") {
 			let totalShares = 0;
 			for (const m of group.members) {
-				totalShares += parseFloat(memberValues[m.userId] || "0") || 0;
+				if (selectedMembers.has(m.userId)) {
+					totalShares += parseFloat(memberValues[m.userId] || "0") || 0;
+				}
 			}
 			for (const m of group.members) {
-				const shares = parseFloat(memberValues[m.userId] || "0") || 0;
-				const shareAmount =
-					totalShares > 0 ? (shares / totalShares) * totalAmount : 0;
-				details[m.userId] = {
-					value: memberValues[m.userId] || "0",
-					displayAmount: shareAmount.toFixed(2),
-				};
+				if (selectedMembers.has(m.userId)) {
+					const shares = parseFloat(memberValues[m.userId] || "0") || 0;
+					const shareAmount =
+						totalShares > 0 ? (shares / totalShares) * totalAmount : 0;
+					details[m.userId] = {
+						value: memberValues[m.userId] || "0",
+						displayAmount: shareAmount.toFixed(2),
+					};
+				} else {
+					details[m.userId] = { value: "0", displayAmount: "0.00" };
+				}
 			}
 		} else if (splitType === "PERCENT") {
 			for (const m of group.members) {
-				const percent = parseFloat(memberValues[m.userId] || "0") || 0;
-				const shareAmount = (percent / 100) * totalAmount;
-				details[m.userId] = {
-					value: memberValues[m.userId] || "0",
-					displayAmount: shareAmount.toFixed(2),
-				};
+				if (selectedMembers.has(m.userId)) {
+					const percent = parseFloat(memberValues[m.userId] || "0") || 0;
+					const shareAmount = (percent / 100) * totalAmount;
+					details[m.userId] = {
+						value: memberValues[m.userId] || "0",
+						displayAmount: shareAmount.toFixed(2),
+					};
+				} else {
+					details[m.userId] = { value: "0", displayAmount: "0.00" };
+				}
 			}
 		} else if (splitType === "EXACT") {
 			for (const m of group.members) {
-				const val = memberValues[m.userId] || "";
-				details[m.userId] = {
-					value: val,
-					displayAmount: val || "0.00",
-				};
+				if (selectedMembers.has(m.userId)) {
+					const val = memberValues[m.userId] || "";
+					details[m.userId] = {
+						value: val,
+						displayAmount: val || "0.00",
+					};
+				} else {
+					details[m.userId] = { value: "", displayAmount: "0.00" };
+				}
 			}
 		}
 
@@ -125,6 +140,20 @@ export default function AddExpenseScreen() {
 			newSet.delete(userId);
 		} else {
 			newSet.add(userId);
+		}
+		setSelectedMembers(newSet);
+	};
+
+	const handleSelectAll = (userIds: string[], select: boolean) => {
+		const newSet = new Set(selectedMembers);
+		if (select) {
+			for (const id of userIds) {
+				newSet.add(id);
+			}
+		} else {
+			for (const id of userIds) {
+				newSet.delete(id);
+			}
 		}
 		setSelectedMembers(newSet);
 	};
@@ -159,14 +188,6 @@ export default function AddExpenseScreen() {
 				options={{
 					title: "Add Expense",
 					presentation: "modal",
-					headerLeft: () => (
-						<TouchableOpacity
-							onPress={() => router.back()}
-							className="-ml-4 flex-row items-center p-4"
-						>
-							<ChevronLeft size={28} className="text-primary" color="#2563EB" />
-						</TouchableOpacity>
-					),
 					headerRight: () => null, // Remove save button from header
 				}}
 			/>
@@ -240,6 +261,7 @@ export default function AddExpenseScreen() {
 						memberValues={memberValues}
 						splitDetails={splitDetails}
 						onToggleMember={toggleMember}
+						onSelectAll={handleSelectAll}
 						onUpdateValue={updateMemberValue}
 					/>
 				</ScrollView>
@@ -248,14 +270,16 @@ export default function AddExpenseScreen() {
 				<SafeAreaView className="absolute bottom-0 left-0 right-0 bg-background/80 p-4 shadow-lg backdrop-blur-md">
 					<TouchableOpacity
 						onPress={handleSave}
-						disabled={!amount || !description}
+						disabled={!amount || !description || selectedMembers.size === 0}
 						className={`w-full items-center rounded-2xl p-4 shadow-sm ${
-							!amount || !description ? "bg-muted" : "bg-primary"
+							!amount || !description || selectedMembers.size === 0
+								? "bg-muted"
+								: "bg-primary"
 						}`}
 					>
 						<Text
 							className={`text-lg font-bold ${
-								!amount || !description
+								!amount || !description || selectedMembers.size === 0
 									? "text-muted-foreground"
 									: "text-primary-foreground"
 							}`}
