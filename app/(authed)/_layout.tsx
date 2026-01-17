@@ -1,41 +1,41 @@
-import { Drawer } from "expo-router/drawer";
+import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import CustomDrawerContent from "../../components/sidebar/CustomDrawerContent";
+import HeaderBack from "../../components/ui/HeaderBack";
+import HeaderRight from "../../components/ui/HeaderRight";
+import HomeTitle from "../../components/ui/HomeTitle";
 
-export default function DrawerLayout() {
+export default function AuthedLayout() {
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
-			<Drawer
-				drawerContent={(props) => <CustomDrawerContent {...props} />}
+			<Stack
 				screenOptions={{
 					headerShown: true,
-					headerTitle: "SplitZone",
-					drawerActiveTintColor: "#2563EB",
+					headerTitle: () => <HomeTitle />,
+					headerRight: () => <HeaderRight />,
+					headerBackTitle: "Back",
 				}}
 			>
-				<Drawer.Screen
+				<Stack.Screen
 					name="(home)"
 					options={{
-						drawerLabel: "Home",
-						title: "SplitZone",
 						headerShown: false,
 					}}
 				/>
-				<Drawer.Screen
+				<Stack.Screen
 					name="settings/index"
 					options={{
-						drawerLabel: "Settings",
 						title: "Settings",
+						headerLeft: () => <HeaderBack />,
 					}}
 				/>
-				<Drawer.Screen
+				<Stack.Screen
 					name="join/[code]"
 					options={{
-						drawerItemStyle: { display: "none" },
 						title: "Join Group",
+						headerLeft: () => <HeaderBack />,
 					}}
 				/>
-			</Drawer>
+			</Stack>
 		</GestureHandlerRootView>
 	);
 }

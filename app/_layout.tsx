@@ -9,6 +9,7 @@ import { ActivityIndicator, Platform, View } from "react-native";
 import { ToastProvider } from "../context/ToastContext";
 import "../global.css";
 import { NAV_THEME } from "../lib/nav-theme";
+import { getStorageItemAsync } from "../lib/storage";
 
 // biome-ignore lint/style/noNonNullAssertion: crashing is fine if env is not present
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
@@ -22,8 +23,21 @@ const secureStorage = {
 };
 
 export default function RootLayout() {
-	const { colorScheme } = useColorScheme();
+	const { colorScheme, setColorScheme } = useColorScheme();
 	const isDarkColorScheme = colorScheme === "dark";
+
+	useEffect(() => {
+		(async () => {
+			try {
+				const theme = await getStorageItemAsync("theme");
+				if (theme === "dark" || theme === "light") {
+					setColorScheme(theme);
+				}
+			} catch (e) {
+				console.error("Failed to load theme preference:", e);
+			}
+		})();
+	}, [setColorScheme]);
 
 	return (
 		<ConvexAuthProvider
