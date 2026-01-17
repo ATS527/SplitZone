@@ -7,12 +7,17 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import z from "zod";
 import { useToast } from "../context/ToastContext";
 
-export const authSchema = z.object({
-	email: z.email("Please enter a valid email address"),
+const signInSchema = z.object({
+	email: z.string().email("Please enter a valid email address"),
 	password: z.string().min(8, "Password must be at least 8 characters"),
+	name: z.string().optional(),
 });
 
-export type AuthFormData = z.infer<typeof authSchema>;
+const signUpSchema = signInSchema.extend({
+	name: z.string().min(2, "Name is required"),
+});
+
+export type AuthFormData = z.infer<typeof signUpSchema>;
 
 export default function Auth() {
 	const { signIn } = useAuthActions();
@@ -21,10 +26,11 @@ export default function Auth() {
 	const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
 
 	const { control, handleSubmit, clearErrors } = useForm<AuthFormData>({
-		resolver: zodResolver(authSchema),
+		resolver: zodResolver(flow === "signIn" ? signInSchema : signUpSchema),
 		defaultValues: {
 			email: "",
 			password: "",
+			name: "",
 		},
 	});
 
@@ -39,12 +45,19 @@ export default function Auth() {
 			await signIn("password", {
 				email: data.email,
 				password: data.password,
+				name: data.name ?? "",
 				flow: flow,
 			});
 			toast.success("Successfully logged in!");
 			router.replace("/");
 		} catch (err) {
-			toast.error(err instanceof Error ? err.message : "Something went wrong");
+			const errorMessage =
+				err instanceof Error ? err.message : "Something went wrong";
+			if (errorMessage.includes("InvalidAccountId")) {
+				toast.error("Invalid email or password");
+			} else {
+				toast.error(errorMessage);
+			}
 		}
 	};
 
@@ -55,6 +68,36 @@ export default function Auth() {
 			</Text>
 
 			<View className="w-full max-w-sm space-y-4">
+				{flow === "signUp" && (
+					<View>
+						<Controller
+							control={control}
+							name="name"
+							render={({
+								field: { onChange, onBlur, value },
+								fieldState: { error },
+							}) => (
+								<>
+									<TextInput
+										className="w-full rounded-lg border border-input p-4 text-lg text-foreground placeholder:text-muted-foreground"
+										placeholder="Full Name"
+										placeholderTextColor="hsl(240 3.8% 46.1%)"
+										onBlur={onBlur}
+										onChangeText={onChange}
+										value={value ?? ""}
+										autoCapitalize="words"
+									/>
+									{error && (
+										<Text className="mt-1 text-sm text-destructive">
+											{error.message}
+										</Text>
+									)}
+								</>
+							)}
+						/>
+					</View>
+				)}
+
 				<View>
 					<Controller
 						control={control}

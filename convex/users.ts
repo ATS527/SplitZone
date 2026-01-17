@@ -17,6 +17,8 @@ export const getCurrentlyLoggedInUser = query({
 			_id: user._id,
 			email: user.email,
 			name: user.name,
+			phone: user.phone,
+			image: user.image,
 		};
 	},
 });
@@ -41,6 +43,44 @@ export const searchUserByEmail = query({
 			email: u.email,
 			name: u.name,
 		}));
+	},
+});
+
+export const updateUserImage = mutation({
+	args: {
+		storageId: v.optional(v.string()),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) {
+			throw new Error("Not authenticated");
+		}
+		await ctx.db.patch(userId, {
+			image: args.storageId
+				? ((await ctx.storage.getUrl(args.storageId)) ?? undefined)
+				: undefined,
+		});
+	},
+});
+
+export const generateUploadUrl = mutation(async (ctx) => {
+	return await ctx.storage.generateUploadUrl();
+});
+
+export const updateUserProfile = mutation({
+	args: {
+		name: v.optional(v.string()),
+		phone: v.optional(v.string()),
+	},
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) {
+			throw new Error("Not authenticated");
+		}
+		await ctx.db.patch(userId, {
+			name: args.name,
+			phone: args.phone,
+		});
 	},
 });
 
