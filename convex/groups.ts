@@ -16,6 +16,7 @@ export const createGroup = mutation({
 		const groupId = await ctx.db.insert("groups", {
 			name: args.name,
 			description: args.description,
+			inviteCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
 		});
 
 		await ctx.db.insert("group_members", {
@@ -23,6 +24,14 @@ export const createGroup = mutation({
 			userId,
 			role: "admin",
 		});
+
+		const user = await ctx.db.get(userId);
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const groupIds = user.groupIds ?? [];
+		await ctx.db.patch(userId, { groupIds: [...groupIds, groupId] });
 
 		return groupId;
 	},
@@ -33,17 +42,15 @@ export const listAllGroupsOfLoggedInUser = query({
 	handler: async (ctx) => {
 		const userId = await getAuthUserId(ctx);
 		if (!userId) {
-			return [];
+			throw new Error("Not authenticated");
 		}
 
-		const memberships = await ctx.db
-			.query("group_members")
-			.withIndex("by_user", (q) => q.eq("userId", userId))
-			.collect();
+		const user = await ctx.db.get(userId);
+		const groupIds = user?.groupIds ?? [];
 
 		const groups = await Promise.all(
-			memberships.map(async (m) => {
-				const group = await ctx.db.get(m.groupId);
+			groupIds.map(async (groupId) => {
+				const group = await ctx.db.get(groupId);
 				return group;
 			}),
 		);
@@ -57,11 +64,13 @@ export const getGroupDetails = query({
 	handler: async (ctx, args) => {
 		const userId = await getAuthUserId(ctx);
 		if (!userId) {
-			return null;
+			throw new Error("Not authenticated");
 		}
 
 		const group = await ctx.db.get(args.groupId);
-		if (!group) return null;
+		if (!group) {
+			throw new Error("Group not found");
+		}
 
 		const members = await ctx.db
 			.query("group_members")
@@ -69,7 +78,9 @@ export const getGroupDetails = query({
 			.collect();
 
 		const hasAccess = members.some((m) => m.userId === userId);
-		if (!hasAccess) return null;
+		if (!hasAccess) {
+			throw new Error("Not authorized");
+		}
 
 		const memberDetails = await Promise.all(
 			members.map(async (m) => {
@@ -126,6 +137,14 @@ export const addMemberToGroup = mutation({
 			userId: args.userId,
 			role: "member",
 		});
+
+		const user = await ctx.db.get(args.userId);
+		if (user) {
+			const groupIds = user.groupIds || [];
+			await ctx.db.patch(args.userId, {
+				groupIds: [...groupIds, args.groupId],
+			});
+		}
 	},
 });
 
@@ -200,7 +219,7 @@ export const joinGroupViaCode = mutation({
 
 		const group = await ctx.db
 			.query("groups")
-			.withIndex("by_invite_code", (q) => q.eq("inviteCode", args.inviteCode))
+			.withIndex("inviteCode", (q) => q.eq("inviteCode", args.inviteCode))
 			.first();
 
 		if (!group) {

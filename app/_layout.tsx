@@ -1,11 +1,10 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ThemeProvider } from "@react-navigation/native";
-import { ConvexReactClient, useConvexAuth } from "convex/react";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { ConvexReactClient } from "convex/react";
+import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useColorScheme } from "nativewind";
-import { useEffect } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { Platform } from "react-native";
 import { ToastProvider } from "../context/ToastContext";
 import "../global.css";
 import { NAV_THEME } from "../lib/nav-theme";
@@ -38,42 +37,11 @@ export default function RootLayout() {
 				value={isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light}
 			>
 				<ToastProvider>
-					<RootLayoutNav />
+					<Stack>
+						<Stack.Screen name="index" options={{ headerShown: false }} />
+					</Stack>
 				</ToastProvider>
 			</ThemeProvider>
 		</ConvexAuthProvider>
-	);
-}
-
-function RootLayoutNav() {
-	const { isAuthenticated, isLoading } = useConvexAuth();
-	const segments = useSegments();
-	const router = useRouter();
-
-	useEffect(() => {
-		if (isLoading) return;
-
-		const inAuthScreen = segments[0] === "auth";
-
-		if (!isAuthenticated && !inAuthScreen) {
-			router.replace("/auth");
-		} else if (isAuthenticated && inAuthScreen) {
-			router.replace("/(authed)/(home)");
-		}
-	}, [isAuthenticated, isLoading, segments, router]);
-
-	if (isLoading) {
-		return (
-			<View className="flex-1 items-center justify-center bg-background">
-				<ActivityIndicator size="large" className="text-primary" />
-			</View>
-		);
-	}
-
-	return (
-		<Stack>
-			<Stack.Screen name="(authed)" options={{ headerShown: false }} />
-			<Stack.Screen name="auth" options={{ headerShown: false }} />
-		</Stack>
 	);
 }

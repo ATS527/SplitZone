@@ -9,12 +9,13 @@ const schema = defineSchema({
 		name: v.string(),
 		image: v.optional(v.string()),
 		emailVerificationTime: v.optional(v.number()),
+		groupIds: v.optional(v.array(v.id("groups"))),
 	}).index("email", ["email"]),
 	groups: defineTable({
 		name: v.string(),
 		description: v.optional(v.string()),
-		inviteCode: v.optional(v.string()),
-	}).index("by_invite_code", ["inviteCode"]),
+		inviteCode: v.string(),
+	}).index("inviteCode", ["inviteCode"]),
 	group_members: defineTable({
 		groupId: v.id("groups"),
 		userId: v.id("users"),

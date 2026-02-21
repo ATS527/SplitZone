@@ -7,11 +7,11 @@ export const getCurrentlyLoggedInUser = query({
 	handler: async (ctx) => {
 		const userId = await getAuthUserId(ctx);
 		if (!userId) {
-			return null;
+			throw new Error("Not authenticated");
 		}
 		const user = await ctx.db.get(userId);
 		if (!user) {
-			return null;
+			throw new Error("User not found");
 		}
 		return {
 			_id: user._id,
@@ -26,7 +26,7 @@ export const searchUserByEmail = query({
 	handler: async (ctx, args) => {
 		const userId = await getAuthUserId(ctx);
 		if (!userId) {
-			return [];
+			throw new Error("Not authenticated");
 		}
 
 		if (!args.search) return [];
