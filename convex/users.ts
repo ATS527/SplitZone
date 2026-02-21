@@ -3,58 +3,58 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const getCurrentlyLoggedInUser = query({
-	args: {},
-	handler: async (ctx) => {
-		const userId = await getAuthUserId(ctx);
-		if (!userId) {
-			throw new Error("Not authenticated");
-		}
-		const user = await ctx.db.get(userId);
-		if (!user) {
-			throw new Error("User not found");
-		}
-		return {
-			_id: user._id,
-			email: user.email,
-			name: user.name,
-		};
-	},
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+    };
+  },
 });
 
 export const searchUserByEmail = query({
-	args: { search: v.string() },
-	handler: async (ctx, args) => {
-		const userId = await getAuthUserId(ctx);
-		if (!userId) {
-			throw new Error("Not authenticated");
-		}
+  args: { search: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
 
-		if (!args.search) return [];
+    if (!args.search) return [];
 
-		const users = await ctx.db
-			.query("users")
-			.withIndex("email", (q) => q.eq("email", args.search))
-			.collect();
+    const users = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", args.search))
+      .collect();
 
-		return users.map((u) => ({
-			_id: u._id,
-			email: u.email,
-			name: u.name,
-		}));
-	},
+    return users.map((u) => ({
+      _id: u._id,
+      email: u.email,
+      name: u.name,
+    }));
+  },
 });
 
 export const updateUserName = mutation({
-	args: {
-		name: v.string(),
-	},
-	handler: async (ctx, args) => {
-		const userId = await getAuthUserId(ctx);
-		if (!userId) {
-			throw new Error("Not authenticated");
-		}
-		await ctx.db.patch(userId, {
-			name: args.name,
-		});
-	},
+  args: {
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+    await ctx.db.patch(userId, {
+      name: args.name,
+    });
+  },
 });

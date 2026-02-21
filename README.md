@@ -7,10 +7,10 @@ SplitZone is a modern React Native application designed for splitting group expe
 - **Framework:** [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/) (SDK 54)
 - **Routing:** [Expo Router](https://docs.expo.dev/router/introduction/) (v6) - File-based routing
 - **Backend & Database:** [Convex](https://www.convex.dev/) - Real-time backend as a service
-- **Styling:** [NativeWind](https://www.nativewind.dev/) (Tailwind CSS)
+- **Styling:** [Uniwind](https://uniwind.dev/) (Tailwind CSS)
 - **Authentication:** Convex Auth
 - **Icons:** Lucide React Native
-- **Linting & Formatting:** Biome, ESLint
+- **Linting & Formatting:** Biome
 
 ## 🛠️ Prerequisites
 
@@ -73,7 +73,7 @@ SplitZone/
 - **User Authentication:** Secure login and session management via Convex Auth.
 - **Group Management:** Create new groups or join existing ones using invite codes.
 - **Real-time Updates:** Instant improvements and data syncing powered by Convex.
-- **Modern UI:** Clean and responsive interface built with NativeWind.
+- **Modern UI:** Clean and responsive interface built with Uniwind.
 
 ## 🤝 Contributing
 
